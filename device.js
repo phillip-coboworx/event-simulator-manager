@@ -1,11 +1,16 @@
 require('dotenv').config();
+// const Events = require("./events");
+const Events = require("./eventFileParser");
 const Protocol = require('azure-iot-device-mqtt').Mqtt;
 const Client = require('azure-iot-device').Client;
 const Message = require('azure-iot-device').Message;
 
 const connectionString = process.env.CONNECTION_STRING || "";
+const intervalLimit = Events.intervals.length;
+const keepAliveSendInterval = 2;
 
 let sendInterval;
+let messageCount = 0;
 
 if(connectionString === "") {
     console.log('device connection string not set');
@@ -24,15 +29,24 @@ client.open()
 });
 
 function connectHandler() {
-    console.log("Connected");
 
-    if (!sendInterval) {
-        sendInterval = setInterval(() => {
-          const message = generateMessage()
-          console.log('Sending message: ' + message.getData())
-          client.sendEvent(message, printResultFor('send'))
-        }, 2000);
-    }
+  if (!sendInterval) {
+      sendInterval = setInterval(() => {
+        
+        const message = generateMessage();
+        console.log('Sending message: ' + "\n" + JSON.stringify(message.getData()) + "\n");
+        //client.sendEvent(message, printResultFor('send'));
+        
+        messageCount++;
+        if(messageCount >= intervalLimit) {
+          clearInterval(sendInterval);
+          sendInterval = null;
+          client.close();
+          process.exit();
+        }
+        
+      }, 1000);
+  }
 }
 
 function errorHandler(error) {
@@ -53,13 +67,34 @@ function messageHandler() {
     client.complete(msg, printResultFor('completed'));
 }
 
+
 function generateMessage () {
-    var windSpeed = 10 + (Math.random() * 4); // range: [10, 14]
-    var temperature = 20 + (Math.random() * 10); // range: [20, 30]
-    var humidity = 60 + (Math.random() * 20); // range: [60, 80]
-    const data = JSON.stringify({ deviceId: 'sim000001', windSpeed: windSpeed, temperature: temperature, humidity: humidity });
-    const message = new Message(data);
-    message.properties.add('temperatureAlert', (temperature > 28) ? 'true' : 'false');
+
+    let intervalEvents = [];
+
+    Events.intervals[messageCount].events.forEach(event => {
+      let data = {};
+      data.node_id = "sim000001";
+      data.timestamp = Date();
+      data.event = event.event_type;
+      data.payload = event.payload;
+
+      intervalEvents.push(JSON.stringify(data));
+    });
+
+    if((messageCount + 1) % keepAliveSendInterval === 0) {
+      let data = {};
+      data.node_id = "sim000001";
+      data.timestamp = Date();
+      data.event = "keep_alive";
+      data.payload = {
+        "connection_status_code": 1
+      }
+
+      intervalEvents.push(JSON.stringify(data));
+    }
+
+    const message = new Message(intervalEvents.join(','));
     return message;
 }
 

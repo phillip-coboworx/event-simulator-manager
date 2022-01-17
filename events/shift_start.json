@@ -3,6 +3,8 @@
     "timestamp": "xx-xx-xxxx yy:yy:yyyy",
     "event": "shift_start",
     "payload": [
-        "program_name": "xxxxxxx"
+        {
+            "program_name": "xxxxxxx"
+        }
     ]
 }
