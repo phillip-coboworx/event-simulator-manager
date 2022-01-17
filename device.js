@@ -1,9 +1,10 @@
 require('dotenv').config();
-// const Events = require("./events");
-const Events = require("./eventFileParser");
+const argv = require('process').argv;
+
 const Protocol = require('azure-iot-device-mqtt').Mqtt;
 const Client = require('azure-iot-device').Client;
 const Message = require('azure-iot-device').Message;
+const Events = require('./utilities/commandLineArgsProcessor').Processor(argv);
 
 const connectionString = process.env.CONNECTION_STRING || "";
 const intervalLimit = Events.intervals.length;
@@ -35,7 +36,7 @@ function connectHandler() {
         
         const message = generateMessage();
         console.log('Sending message: ' + "\n" + JSON.stringify(message.getData()) + "\n");
-        //client.sendEvent(message, printResultFor('send'));
+        client.sendEvent(message, printResultFor('send'));
         
         messageCount++;
         if(messageCount >= intervalLimit) {
@@ -45,7 +46,7 @@ function connectHandler() {
           process.exit();
         }
         
-      }, 1000);
+      }, 2000);
   }
 }
 
@@ -104,3 +105,5 @@ function printResultFor(op) {
       if (res) console.log(op + ' status: ' + res.constructor.name);
     };
 }
+
+
