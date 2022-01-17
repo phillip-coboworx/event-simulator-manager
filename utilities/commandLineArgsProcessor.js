@@ -22,7 +22,7 @@ module.exports.Processor = (argv) => {
         
         if(objectIsEmpty){
 
-            events = require('./YAMLFileParser').FileParser('./events.yml');
+            events = require('./YAMLFileParser').FileParser('./template_files/events.yml');
 
         } else {
         
