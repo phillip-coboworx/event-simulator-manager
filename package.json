@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "lint": "npx eslint ./device.js ./utilities/commandLineArgsProcessor.js ./utilities/YAMLFileParser.js",
+    "lint:fix": "npx eslint ./device.js ./utilities/commandLineArgsProcessor.js ./utilities/YAMLFileParser.js --fix"
+  },
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -13,5 +16,10 @@
     "i": "^0.3.7",
     "npm": "^8.3.1",
     "yaml": "2.0.0-10"
+  },
+  "devDependencies": {
+    "eslint": "^8.7.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.25.4"
   }
 }
