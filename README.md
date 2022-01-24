@@ -18,10 +18,10 @@
 
 - **intervals** -> An array which contains event objects. Defines and groups all objects which belong into the same time step and will be sent together. 
 	- **events** -> All events that happen in one time step. Multiple, different events can be defined and sent in one time step.
-		**event_type** -> The type of event that is being sent. Further explained under the event types.
-		**payload** -> An array that contains the actual values of the event.
-			**changed_field** -> Defines which field has a change of value
-			**<changed_value>** -> Contains the new value. Further explained under the event types.
+		- **event_type** -> The type of event that is being sent. Further explained under the event types.
+		- **payload** -> An array that contains the actual values of the event.
+			- **changed_field** -> Defines which field has a change of value
+			- **<changed_value>** -> Contains the new value. Further explained under the event types.
 			
 ####  YAML-Example
     ---
