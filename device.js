@@ -8,7 +8,7 @@ const Events = require('./utilities/commandLineArgsProcessor').Processor(argv);
 
 const connectionString = process.env.CONNECTION_STRING || '';
 const intervalLimit = Events.intervals.length;
-const keepAliveSendInterval = 3;
+const keepAliveSendInterval = Events.keep_alive_send_interval;
 
 let sendInterval;
 let messageCount = 0;

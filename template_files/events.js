@@ -1,4 +1,5 @@
 let events = {
+    "keep_alive_send_interval": 3,
     "intervals": [
         {
             "events": [

@@ -1,4 +1,5 @@
 ---
+keep_alive_send_interval: 3
 intervals:
 - events:
   - event_type: shift_start
