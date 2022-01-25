@@ -23,7 +23,7 @@ intervals:
       downtime_status_code: 0
 - events:
   - event_type: on_change
-    randomized: true
+    randomized: false
     payload:
     - changed_field: status_change
       status_code: 3
