@@ -1,7 +1,7 @@
 const FileReader = require('fs').readFileSync;
 const YAML = require('yaml');
 
-module.exports.FileParser = (path) => {
+module.exports.Parser = (path) => {
   try {
     const file = FileReader(path, 'utf8');
     return YAML.parse(file);

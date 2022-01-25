@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "lint": "npx eslint ./device.js ./utilities/commandLineArgsProcessor.js ./utilities/YAMLFileParser.js",
-    "lint:fix": "npx eslint ./device.js ./utilities/commandLineArgsProcessor.js ./utilities/YAMLFileParser.js --fix"
+    "lint": "npx eslint .",
+    "lint:fix": "npx eslint . --fix"
   },
   "author": "",
   "license": "ISC",
