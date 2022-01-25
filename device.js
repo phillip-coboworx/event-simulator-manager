@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { argv } = require('process');
+const { argv, eventNames } = require('process');
 
 const Protocol = require('azure-iot-device-mqtt').Mqtt;
 const { Client } = require('azure-iot-device');
@@ -36,7 +36,7 @@ function connectHandler() {
     sendInterval = setInterval(() => {
       const message = generateMessage();
       console.log(`Sending message: \n ${JSON.stringify(message.getData())} \n`);
-    //   client.sendEvent(message, callbackHandler('send'));
+      client.sendEvent(message, callbackHandler('send'));
 
       messageCount = runInLoop ? (messageCount + 1) % intervalLimit : messageCount += 1;
     }, 2000);
@@ -81,7 +81,11 @@ function generateMessage() {
 
   const intervalEvents = [];
   events.intervals[messageCount].events.forEach((event) => {
-    intervalEvents.push(JSON.stringify(generateMessageContent(event.event_type, event.payload)));
+    if (!event.randomized || Math.random() >= 0.5) {
+      intervalEvents.push(
+        JSON.stringify(generateMessageContent(event.event_type, event.payload)),
+      );
+    }
   });
 
   if ((messageCount + 1) % keepAliveSendInterval === 0) {
