@@ -13,16 +13,16 @@
 	- `--format=<yaml|json>` - Defines in which format said file is written
     - `--loop` - Sets the simulator to run in an infinite loop, constantly iterating the passed events. **NOTE:** The loop needs to be stopped manually or it will continously send events to the IoT-Hub.
 
-	`node device.js --file=./example.yaml --format=yaml`
+	`node device.js --file=./example.yaml --format=yaml --loop`
 
 ### Event File Structure
 - **node_id** -> The ID of the simulated IoT device. 
 - **keep_alive_send_interval** -> Defines the send frequency of the keep-alive event in intervals. E.g., the value 3 would mean that every 3 intervals a keep-alive event is send. 
 - **intervals** -> An array which contains event objects. Defines and groups all objects which belong into the same time step and will be sent together. 
-    - **interval_length** -> Defines how long the simulator will wait until it sends the messages in the current interval.
+    - **interval_length (OPTIONAL))** -> Defines how long the simulator will wait until it sends the messages in the current interval. If not present, the value will be set to 2 seconds.
 	- **events** -> All events that happen in one time step. Multiple, different events can be defined and sent in one time step.
 		- **event_type** -> The type of event that is being sent. Further explained under the event types.
-        - **randomized** -> When set to true, the event will only be randomly sent.
+        - **randomized (OPTIONAL)** -> When set to true, the event will only be randomly sent. If not present, it will be set to false.
 		- **payload** -> An array that contains the actual values of the event.
 			- **changed_field** -> Defines which field has a change of value
 			- **<changed_value>** -> Contains the new value. Further explained under the event types.
@@ -32,10 +32,8 @@
     node_id: 'sim000001'
     keep_alive_send_interval: 3
     intervals:
-    - interval_length: 2
-      events:
+    - events:
       - event_type: shift_start
-        randomized: false
         payload:
         - program_name: box_palletizing
       - event_type: on_change
@@ -87,11 +85,9 @@
                 ]
             },
             {
-                interval_length: 4,
                 events: [
                     {
                         event_type: on_change,
-                        randomized: false,
                         payload: [
                             {
                                 changed_field: "status_change",

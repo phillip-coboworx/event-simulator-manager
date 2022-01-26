@@ -47,7 +47,7 @@ function messageHandler(msg) {
 }
 
 function connectHandler() {
-  intervalLength = events.intervals[intervalCount].interval_length * 1000;
+  intervalLength = events.intervals[intervalCount].interval_length * 1000 || 2000;
   setTimeout(() => setIntervalActions(), intervalLength);
 }
 
@@ -62,7 +62,7 @@ function setIntervalActions() {
     client.close();
     process.exit();
   } else {
-    intervalLength = events.intervals[intervalCount].interval_length * 1000;
+    intervalLength = events.intervals[intervalCount].interval_length * 1000 || 2000;
     setTimeout(() => setIntervalActions(), intervalLength);
   }
 }
@@ -70,7 +70,7 @@ function setIntervalActions() {
 function generateMessage() {
   const intervalEvents = [];
   events.intervals[intervalCount].events.forEach((event) => {
-    if (!event.randomized || Math.random() >= 0.5) {
+    if (!(event.randomized || false) || Math.random() >= 0.5) {
       intervalEvents.push(
         JSON.stringify(generateMessageContent(event.event_type, event.payload)),
       );

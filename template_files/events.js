@@ -3,11 +3,9 @@ const events = {
   keep_alive_send_interval: 3,
   intervals: [
     {
-      interval_length: 10,
       events: [
         {
           event_type: 'shift_start',
-          randomized: false,
           payload: [
             {
               program_name: 'box_palletizing',
@@ -16,7 +14,6 @@ const events = {
         },
         {
           event_type: 'on_change',
-          randomized: false,
           payload: [
             {
               changed_field: 'status_change',
@@ -32,7 +29,7 @@ const events = {
       events: [
         {
           event_type: 'on_change',
-          randomized: false,
+          randomized: true,
           payload: [
             {
               changed_field: 'status_change',
