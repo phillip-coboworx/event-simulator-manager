@@ -1,7 +1,9 @@
 ---
 keep_alive_send_interval: 3
 intervals:
-- events:
+- interval_length: 2
+  events:
+  - interval_length: 10,
   - event_type: shift_start
     randomized: false
     payload:
@@ -12,7 +14,8 @@ intervals:
     - changed_field: status_change
       status_code: 1
       status_information: Connecting...
-- events:
+- interval_length: 2
+  events:
   - event_type: on_change
     randomized: false
     payload:
@@ -21,7 +24,8 @@ intervals:
       status_information: Connected and Running
     - changed_field: downtime_change
       downtime_status_code: 0
-- events:
+- interval_length: 10
+  events:
   - event_type: on_change
     randomized: false
     payload:
@@ -30,7 +34,8 @@ intervals:
       status_information: No parts left
     - changed_field: downtime_change
       downtime_status_code: 1
-- events:
+- interval_length: 5
+  events:
   - event_type: on_change
     randomized: false
     payload:

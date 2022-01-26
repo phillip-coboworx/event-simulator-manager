@@ -7,4 +7,5 @@ parserOptions:
   ecmaVersion: latest
 rules: 
   no-console: off
+  no-use-before-define: off
 ignorePatterns: ["src/node_modules/*"]

@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { argv, eventNames } = require('process');
+const { argv } = require('process');
 
 const Protocol = require('azure-iot-device-mqtt').Mqtt;
 const { Client } = require('azure-iot-device');
@@ -12,12 +12,11 @@ const keepAliveSendInterval = events.keep_alive_send_interval;
 const intervalLimit = events.intervals.length;
 const runInLoop = simulatorSettings.loop;
 
-let messageCount = 0;
-let sendInterval;
+let intervalCount = 0;
+let intervalLength;
 
 if (connectionString === '') {
-  console.log('device connection string not set');
-  process.exit(-1);
+  throw new Error('Device connection string not set!');
 }
 
 const client = Client.fromConnectionString(connectionString, Protocol);
@@ -31,34 +30,58 @@ client.open()
     console.error(`Could not connect: ${err.message}`);
   });
 
-function connectHandler() {
-  if (!sendInterval) {
-    sendInterval = setInterval(() => {
-      const message = generateMessage();
-      console.log(`Sending message: \n ${JSON.stringify(message.getData())} \n`);
-      client.sendEvent(message, callbackHandler('send'));
-
-      messageCount = runInLoop ? (messageCount + 1) % intervalLimit : messageCount += 1;
-    }, 2000);
-  }
-}
-
 function errorHandler(error) {
   console.error(error.message);
 }
 
 function disconnectHandler() {
-  clearInterval(sendInterval);
-  sendInterval = null;
-
   client.open().catch((err) => {
-    console.error(err.message);
+    throw new Error(err);
   });
 }
 
 function messageHandler(msg) {
   console.log(`Id: ${msg.messageId} Body: ${msg.data}`);
   client.complete(msg, callbackHandler('completed'));
+}
+
+function connectHandler() {
+  intervalLength = events.intervals[intervalCount].interval_length * 1000;
+  setTimeout(() => setIntervalActions(), intervalLength);
+}
+
+function setIntervalActions() {
+  const message = generateMessage();
+  console.log(`Sending message: \n ${JSON.stringify(message.getData())} \n`);
+  client.sendEvent(message, callbackHandler('send'));
+
+  intervalCount = runInLoop ? (intervalCount + 1) % intervalLimit : intervalCount += 1;
+
+  if (intervalCount >= intervalLimit) {
+    client.close();
+    process.exit();
+  } else {
+    intervalLength = events.intervals[intervalCount].interval_length * 1000;
+    setTimeout(() => setIntervalActions(), intervalLength);
+  }
+}
+
+function generateMessage() {
+  const intervalEvents = [];
+  events.intervals[intervalCount].events.forEach((event) => {
+    if (!event.randomized || Math.random() >= 0.5) {
+      intervalEvents.push(
+        JSON.stringify(generateMessageContent(event.event_type, event.payload)),
+      );
+    }
+  });
+
+  if ((intervalCount + 1) % keepAliveSendInterval === 0) {
+    intervalEvents.push(JSON.stringify(generateMessageContent('keep_alive', { connection_status_code: 1 })));
+  }
+
+  const message = new Message(intervalEvents.join(','));
+  return message;
 }
 
 function generateMessageContent(eventType, payload) {
@@ -69,31 +92,6 @@ function generateMessageContent(eventType, payload) {
   data.payload = payload;
 
   return data;
-}
-
-function generateMessage() {
-  if (messageCount >= intervalLimit) {
-    clearInterval(sendInterval);
-    sendInterval = null;
-    client.close();
-    process.exit();
-  }
-
-  const intervalEvents = [];
-  events.intervals[messageCount].events.forEach((event) => {
-    if (!event.randomized || Math.random() >= 0.5) {
-      intervalEvents.push(
-        JSON.stringify(generateMessageContent(event.event_type, event.payload)),
-      );
-    }
-  });
-
-  if ((messageCount + 1) % keepAliveSendInterval === 0) {
-    intervalEvents.push(JSON.stringify(generateMessageContent('keep_alive', { connection_status_code: 1 })));
-  }
-
-  const message = new Message(intervalEvents.join(','));
-  return message;
 }
 
 function callbackHandler(op) {
