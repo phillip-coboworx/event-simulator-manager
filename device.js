@@ -11,6 +11,7 @@ const connectionString = process.env.CONNECTION_STRING || '';
 const keepAliveSendInterval = events.keep_alive_send_interval;
 const intervalLimit = events.intervals.length;
 const runInLoop = simulatorSettings.loop;
+const nodeId = events.node_id;
 
 let intervalCount = 0;
 let intervalLength;
@@ -86,7 +87,7 @@ function generateMessage() {
 
 function generateMessageContent(eventType, payload) {
   const data = {};
-  data.nodeId = 'sim000001';
+  data.nodeId = nodeId;
   data.timestamp = Date();
   data.event = eventType;
   data.payload = payload;

@@ -16,7 +16,8 @@
 	`node device.js --file=./example.yaml --format=yaml`
 
 ### Event File Structure
-
+- **node_id** -> The ID of the simulated IoT device. 
+- **keep_alive_send_interval** -> Defines the send frequency of the keep-alive event in intervals. E.g., the value 3 would mean that every 3 intervals a keep-alive event is send. 
 - **intervals** -> An array which contains event objects. Defines and groups all objects which belong into the same time step and will be sent together. 
     - **interval_length** -> Defines how long the simulator will wait until it sends the messages in the current interval.
 	- **events** -> All events that happen in one time step. Multiple, different events can be defined and sent in one time step.
@@ -28,6 +29,8 @@
 			
 ####  YAML-Example
     ---
+    node_id: 'sim000001'
+    keep_alive_send_interval: 3
     intervals:
     - interval_length: 2
       events:
@@ -55,6 +58,8 @@
 **Note** that the .json-example is not actually a .json-file, but rather a .js-file which contains a node module which simply exports an object which in turn contains the json. This was done in order to be able to simply import the file, instead of having to parse it beforehand. 
 
     let events = {
+        node_id: 'sim000001',
+        keep_alive_send_interval: 3,
         intervals: [
             {
                 interval_length: 2,

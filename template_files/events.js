@@ -1,4 +1,5 @@
 const events = {
+  node_id: 'sim000001',
   keep_alive_send_interval: 3,
   intervals: [
     {
