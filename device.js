@@ -32,7 +32,7 @@ client.open()
   });
 
 function errorHandler(error) {
-  console.error(error.message);
+  throw new Error(error);
 }
 
 function disconnectHandler() {
@@ -53,7 +53,7 @@ function connectHandler() {
 
 function setIntervalActions() {
   const message = generateMessage();
-  console.log(`Sending message: \n ${JSON.stringify(message.getData())} \n`);
+  console.log(`Sending message: \n ${message.getData()} \n`);
   //client.sendEvent(message, callbackHandler('send'));
 
   intervalCount = runInLoop ? (intervalCount + 1) % intervalLimit : intervalCount += 1;

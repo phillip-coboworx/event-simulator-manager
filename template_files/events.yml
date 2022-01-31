@@ -6,36 +6,42 @@ intervals:
   - event_type: shift_start
     payload:
     - program_name: box_palletizing
-  - event_type: on_change
+  - event_type: status
     payload:
-    - changed_field: status_change
-      status_code: 1
+    - status_code: 1
       status_information: Connecting...
 - interval_length: 2
   events:
-  - event_type: on_change
+  - event_type: status
+    payload: 
+    - status_code: 4
+      status_information: Connected and Running
+  - event_type: change
     randomized: true
     payload:
-    - changed_field: status_change
-      status_code: 4
-      status_information: Connected and Running
-    - changed_field: downtime_change
+    - changed_field: downtime
       downtime_status_code: 0
 - events:
-  - event_type: on_change
-    payload:
-    - changed_field: status_change
-      status_code: 3
+  - event_type: status
+    payload: 
+    - status_code: 3
       status_information: No parts left
-    - changed_field: downtime_change
+  - event_type: change
+    payload:
+    - changed_field: downtime
       downtime_status_code: 1
 - interval_length: 2
   events:
-  - event_type: on_change
+  - event_type: status
+    payload: 
+    - status_code: 4
+      status_information: Connected and Running
+  - event_type: change
     randomized: true
     payload:
-    - changed_field: status_change
-      status_code: 4
-      status_information: Connected and Running
-    - changed_field: downtime_change
+    - changed_field: downtime
       downtime_status_code: 0
+- events: 
+  - event_type: shift_end
+    payload: 
+      
