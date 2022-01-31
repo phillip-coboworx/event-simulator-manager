@@ -1,5 +1,5 @@
 module.exports.Processor = (argv) => {
-  const possibleArguments = ['file', 'format', 'loop'];
+  const possibleArguments = ['file', 'loop'];
   const passedArguments = {};
 
   argv.forEach((val, index) => {

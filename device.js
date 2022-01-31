@@ -54,7 +54,7 @@ function connectHandler() {
 function setIntervalActions() {
   const message = generateMessage();
   console.log(`Sending message: \n ${JSON.stringify(message.getData())} \n`);
-  client.sendEvent(message, callbackHandler('send'));
+  //client.sendEvent(message, callbackHandler('send'));
 
   intervalCount = runInLoop ? (intervalCount + 1) % intervalLimit : intervalCount += 1;
 
@@ -88,7 +88,7 @@ function generateMessage() {
 function generateMessageContent(eventType, payload) {
   const data = {};
   data.nodeId = nodeId;
-  data.timestamp = Date();
+  data.timestamp = Date.now();
   data.event = eventType;
   data.payload = payload;
 

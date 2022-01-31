@@ -4,39 +4,25 @@ module.exports.FileParser = (passedArguments) => {
   const simulatorSettings = {};
   let events = {};
 
-  function hasCorrectFileExtension(path, correctFileExtension) {
-    const fileExtension = (path.match(/[^\\/]\.([^\\/.]+)$/) || [null]).pop();
-    return fileExtension === correctFileExtension;
+  function GetFileExtension(file) {
+    return (file.match(/[^\\/]\.([^\\/.]+)$/) || [null]).pop();
   }
 
-  if (passedArguments.file && passedArguments.format) {
-    switch (passedArguments.format.toLowerCase()) {
+  if (passedArguments.file) {
+    const fileExtension = GetFileExtension(passedArguments.file).toLowerCase();
+
+    switch (fileExtension) {
       case 'yaml':
-        if (hasCorrectFileExtension) {
-          events = YAMLParser(passedArguments.file);
-        } else {
-          throw new Error('Invalid file extension!');
-        }
+        events = YAMLParser(passedArguments.file);
         break;
 
       case 'json':
-        if (hasCorrectFileExtension) {
-          try {
-            events = require(passedArguments.file);
-          } catch (err) {
-            throw new Error(err);
-          }
-        } else {
-          throw new Error('Invalid file extension!');
-        }
+        events = require(passedArguments.file);
         break;
 
       default:
         throw new Error('Invalid format!');
     }
-  } else if ((passedArguments.file && !passedArguments.format)
-    || (!passedArguments.file && passedArguments.format)) {
-    throw new Error('Invalid parameter count! Either none or all parameters have to be defined!');
   } else {
     events = YAMLParser('./template_files/events.yml');
   }
