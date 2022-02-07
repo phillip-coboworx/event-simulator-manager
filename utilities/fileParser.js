@@ -20,11 +20,15 @@ module.exports.FileParser = (passedArguments) => {
         events = require(passedArguments.file);
         break;
 
+      case 'js':
+        events = require(passedArguments.file);
+        break;
+
       default:
         throw new Error('Invalid format!');
     }
   } else {
-    events = YAMLParser('./template_files/events.yml');
+    events = YAMLParser('./templates/events.yml');
   }
 
   simulatorSettings.loop = !!passedArguments.loop;

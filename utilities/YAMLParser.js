@@ -6,6 +6,6 @@ module.exports.Parser = (path) => {
     const file = FileReader(path, 'utf8');
     return YAML.parse(file);
   } catch (err) {
-    console.error(err);
+    throw new Error(`Error while parsing YAML file! ${err}`);
   }
 };
