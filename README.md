@@ -184,7 +184,7 @@ Is sent when a shift has ended.
 
 ### **JS**
 
-The js-templates includes two extra object types which are not included/needed in the other two template file formats.
+The js-templates include two extra object types which are not included/needed in the other two template file formats.
 
 - Intervals() is a container for Interval() objects and also contains the device's ID and keep-alive message sending interval
 ```js
@@ -200,6 +200,8 @@ new Intervals(nodeId, keepAliveSendInterval, intervals)
 //intervalLength - (OPTIONAL) Defines how long the simulator will wait until it sends the messages in the current interval. If not present, the value will be set to 2 seconds.
 new Interval(events, <intervalLength>)
 ```
+
+**Events**
 
 1. shift_start
 ```js
