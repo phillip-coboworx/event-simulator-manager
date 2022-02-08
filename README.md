@@ -183,6 +183,24 @@ Is sent when a shift has ended.
 **NOTE** that any custom event can also be send following the same structure of each different template files. For more detailed examples, read below.
 
 ### **JS**
+
+The js-templates includes two extra object types which are not included/needed in the other two template file formats.
+
+- Intervals() is a container for Interval() objects and also contains the device's ID and keep-alive message sending interval
+```js
+//nodeId - The unique identifier of the sending IoT device
+//keepAliveSendInterval - Defines the send frequency of the keep-alive event in intervals. E.g., the value 3 would mean that every 3 intervals a keep-alive event is send.
+//intervals - Array which contains Interval-objects
+new Intervals(nodeId, keepAliveSendInterval, intervals)
+```
+
+- Interval
+```js
+//events - Array which contains the Event-objects that will be send during this interval
+//intervalLength - (OPTIONAL) Defines how long the simulator will wait until it sends the messages in the current interval. If not present, the value will be set to 2 seconds.
+new Interval(events, <intervalLength>)
+```
+
 1. shift_start
 ```js
 //randomized - (OPTIONAL) Sets the event to be randomly send
