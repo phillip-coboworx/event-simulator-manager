@@ -81,7 +81,7 @@ function generateMessage() {
     intervalEvents.push(JSON.stringify(generateMessageContent('keep_alive', { connection_status_code: 1 })));
   }
 
-  const message = new Message(intervalEvents.join(','));
+  const message = new Message(`[${intervalEvents.join(',')}]`);
   return message;
 }
 
