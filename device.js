@@ -1,4 +1,5 @@
 require('dotenv').config();
+const { v4: uuidv4 } = require('uuid');
 const { argv } = require('process');
 
 const Protocol = require('azure-iot-device-mqtt').Mqtt;
@@ -57,14 +58,6 @@ function setIntervalActions() {
   client.sendEvent(message, callbackHandler('send'));
 
   intervalCount = runInLoop ? (intervalCount + 1) % intervalLimit : intervalCount += 1;
-
-  if (intervalCount >= intervalLimit) {
-    client.close();
-    process.exit();
-  } else {
-    intervalLength = events.intervals[intervalCount].interval_length * 1000 || 2000;
-    setTimeout(() => setIntervalActions(), intervalLength);
-  }
 }
 
 function generateMessage() {
@@ -87,6 +80,7 @@ function generateMessage() {
 
 function generateMessageContent(eventType, payload) {
   const data = {};
+  data.eventId = uuidv4();
   data.nodeId = nodeId;
   data.timestamp = Date.now();
   data.event = eventType;
@@ -98,6 +92,15 @@ function generateMessageContent(eventType, payload) {
 function callbackHandler(op) {
   return function printResult(err, res) {
     if (err) console.log(`${op} error: ${err.toString()}`);
-    if (res) console.log(`${op} status ${res.constructor.name}`);
+    if (res) {
+      console.log(`${op} status ${res.constructor.name}`);
+      if (intervalCount >= intervalLimit) {
+        client.close();
+        process.exit();
+      } else {
+        intervalLength = events.intervals[intervalCount].interval_length * 1000 || 2000;
+        setTimeout(() => setIntervalActions(), intervalLength);
+      }
+    }
   };
 }
