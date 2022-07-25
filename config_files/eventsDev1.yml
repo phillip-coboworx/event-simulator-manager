@@ -1,7 +1,8 @@
 ---
 keep_alive_send_interval: 3
 intervals:
-- events:
+- repeat: 3
+  events:
   - event_type: shift_start
     payload:
     - program_name: box_palletizing
@@ -10,6 +11,7 @@ intervals:
     - status_code: 1
       status_information: Connecting...
 - interval_length: 2
+  repeat: 2
   events:
   - event_type: status
     payload: 

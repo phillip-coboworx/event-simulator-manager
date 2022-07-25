@@ -9,8 +9,8 @@ const deviceIds = connectionStrings.map((conn) => conn
   .find((params) => params.split('=')[0] === 'DeviceId')
   .split('=')[1]);
 
-for (let i = 0; i < 2; i += 1) {
-  const child = spawn('node', ['device.js', `connString ${connectionStrings[i]}`, `deviceId ${deviceIds[i]}`, `file ${eventFiles[i]}`, 'loop']);
+for (let i = 0; i < connectionStrings.length; i += 1) {
+  const child = spawn('node', ['device.js', `connString ${connectionStrings[i]}`, `deviceId ${deviceIds[i]}`, `file ${eventFiles[i]}`]);
 
   child.stdout.setEncoding('utf8');
   child.stdout.on('data', (data) => {

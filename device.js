@@ -15,8 +15,7 @@ const { deviceId } = simulatorSettings;
 
 let intervalCount = 0;
 let intervalLength;
-
-// console.log(`############ ${connectionString} ${deviceId} \n --- Events ${JSON.stringify(events)} \n ############`);
+let repetitionCounter = 0;
 
 if (connectionString === '') {
   throw new Error('Device connection string not set!');
@@ -58,7 +57,23 @@ function setIntervalActions() {
   console.log(`Sending message: \n ${message.getData()} \n`);
   client.sendEvent(message, callbackHandler('send'));
 
-  intervalCount = runInLoop ? (intervalCount + 1) % intervalLimit : intervalCount += 1;
+  setIntervalCount();
+  // intervalCount = runInLoop ? (intervalCount + 1) % intervalLimit : intervalCount += 1;
+}
+
+function setIntervalCount() {
+  if (events.intervals[intervalCount].repeat > 0 || false) {
+    if (repetitionCounter + 1 === events.intervals[intervalCount].repeat) {
+      repetitionCounter = 0;
+      intervalCount += 1;
+    } else if (repetitionCounter + 1 < events.intervals[intervalCount].repeat) {
+      repetitionCounter += 1;
+    }
+  } else if (runInLoop) {
+    intervalCount = (intervalCount + 1) % intervalLimit;
+  } else {
+    intervalCount += 1;
+  }
 }
 
 function generateMessage() {
@@ -74,7 +89,6 @@ function generateMessage() {
   if ((intervalCount + 1) % keepAliveSendInterval === 0) {
     intervalEvents.push(JSON.stringify(generateMessageContent('keep_alive', { connection_status_code: 1 })));
   }
-
   const message = new Message(`[${intervalEvents.join(',')}]`);
   return message;
 }
