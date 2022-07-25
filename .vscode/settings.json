@@ -1,0 +1,8 @@
+{
+    "appService.zipIgnorePattern": [
+        "node_modules{,/**}",
+        ".vscode{,/**}"
+    ],
+    "appService.defaultWebAppToDeploy": "/subscriptions/bd847c89-7c13-4bd5-bd53-d74dbfd551d9/microsoft.web/sites/subscriptions/bd847c89-7c13-4bd5-bd53-d74dbfd551d9/resourceGroups/rg-dashboards-dev/providers/Microsoft.Web/sites/appsrvc-device-simulator",
+    "appService.deploySubpath": "."
+}

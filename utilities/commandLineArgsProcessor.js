@@ -1,30 +1,27 @@
+const { FileParser } = require('./fileParser');
+const { SettingsManager } = require('./simulatorSettingsManager');
+
 module.exports.Processor = (argv) => {
-  const possibleArguments = ['file', 'loop'];
+  const possibleArguments = ['file', 'loop', 'connString', 'deviceId'];
   const passedArguments = {};
 
   argv.forEach((val, index) => {
     let arg;
-
     if (index > 1) {
       try {
-        arg = val.split('=');
-        arg[0] = arg[0].slice(2);
+        arg = val.split(' ');
       } catch (err) {
         console.error(err);
         throw new Error('Invalid parameter formatting!');
       }
 
-      if (!possibleArguments.includes(arg[0])) {
-        throw new Error('Invalid parameters!');
-      }
+      if (!possibleArguments.includes(arg[0])) throw new Error('Invalid parameters!');
 
-      if (arg[0] === 'loop') {
-        passedArguments[arg[0]] = true;
-      } else {
-        passedArguments[arg[0]] = arg[1];
-      }
+      passedArguments[arg[0]] = arg[0] === 'loop' ? true : arg[1];
     }
   });
+  const events = FileParser(passedArguments);
+  const simulatorSettings = SettingsManager(passedArguments);
 
-  return passedArguments;
+  return { events, simulatorSettings };
 };

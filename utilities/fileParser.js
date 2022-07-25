@@ -1,25 +1,24 @@
 const YAMLParser = require('./YAMLParser').Parser;
 
 module.exports.FileParser = (passedArguments) => {
-  const simulatorSettings = {};
   let events = {};
 
   function GetFileExtension(file) {
     return (file.match(/[^\\/]\.([^\\/.]+)$/) || [null]).pop();
   }
 
-  if (passedArguments.file) {
+  if (!passedArguments.file || passedArguments.file === '') {
+    events = YAMLParser('./templates/events.yml');
+  } else {
     const fileExtension = GetFileExtension(passedArguments.file).toLowerCase();
 
     switch (fileExtension) {
+      case 'yml':
       case 'yaml':
         events = YAMLParser(passedArguments.file);
         break;
 
       case 'json':
-        events = require(passedArguments.file);
-        break;
-
       case 'js':
         events = require(passedArguments.file);
         break;
@@ -27,11 +26,7 @@ module.exports.FileParser = (passedArguments) => {
       default:
         throw new Error('Invalid format!');
     }
-  } else {
-    events = YAMLParser('./templates/events.yml');
   }
 
-  simulatorSettings.loop = !!passedArguments.loop;
-
-  return [simulatorSettings, events];
+  return events;
 };

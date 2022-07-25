@@ -5,17 +5,18 @@ const { argv } = require('process');
 const Protocol = require('azure-iot-device-mqtt').Mqtt;
 const { Client } = require('azure-iot-device');
 const { Message } = require('azure-iot-device');
-const passedArguments = require('./utilities/commandLineArgsProcessor').Processor(argv);
-const [simulatorSettings, events] = require('./utilities/fileParser').FileParser(passedArguments);
+const { events, simulatorSettings } = require('./utilities/commandLineArgsProcessor').Processor(argv);
 
-const connectionString = process.env.CONNECTION_STRING || '';
+const connectionString = simulatorSettings.connString || '';
 const keepAliveSendInterval = events.keep_alive_send_interval;
 const intervalLimit = events.intervals.length;
 const runInLoop = simulatorSettings.loop;
-const nodeId = events.node_id;
+const { deviceId } = simulatorSettings;
 
 let intervalCount = 0;
 let intervalLength;
+
+// console.log(`############ ${connectionString} ${deviceId} \n --- Events ${JSON.stringify(events)} \n ############`);
 
 if (connectionString === '') {
   throw new Error('Device connection string not set!');
@@ -81,7 +82,7 @@ function generateMessage() {
 function generateMessageContent(eventType, payload) {
   const data = {};
   data.eventId = uuidv4();
-  data.nodeId = nodeId;
+  data.deviceId = deviceId;
   data.timestamp = Date.now();
   data.event = eventType;
   data.payload = payload;
