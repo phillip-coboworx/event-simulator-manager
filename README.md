@@ -35,7 +35,8 @@ _________________
 - **keep_alive_send_interval** -> Defines the send frequency of the keep-alive event in intervals. E.g., the value 3 would mean that every 3 intervals a keep-alive event is send. 
 - **intervals** -> An array which contains event objects. Defines and groups all objects which belong into the same time step and will be sent together. 
     - **interval_length (OPTIONAL))** -> Defines how long the simulator will wait until it sends the messages in the current interval. If not present, the value will be set to 2 seconds.
-	- **events** -> All events that happen in one time step. Multiple, different events can be defined and sent in one time step.
+	- **repeat (OPTIONAL)** -> This field causes the interval to be sent repeatedly, according to the int value provided.
+    - **events** -> All events that happen in one time step. Multiple, different events can be defined and sent in one time step.
 		- **event_type** -> The type of event that is being sent. Further explained under the event types.
         - **randomized (OPTIONAL)** -> When set to true, the event will only be randomly sent. If not present, it will be set to false.
 		- **payload** -> An array that contains the actual values of the event.
