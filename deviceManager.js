@@ -1,7 +1,7 @@
 require('dotenv').config();
 const { spawn } = require('child_process');
 
-const eventFiles = ['./config_files/eventsDev1.yml', './config_files/eventsDev2.yml'];
+const eventFiles = ['./config_files/eventsDev1.yml', './config_files/eventsDev2.yml', './config_files/eventsDev3.yml'];
 
 const connectionStrings = process.env.CONNECTION_STRINGS.split(' ');
 const deviceIds = connectionStrings.map((conn) => conn
