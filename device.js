@@ -5,15 +5,19 @@ const { argv } = require('process');
 const Protocol = require('azure-iot-device-mqtt').Mqtt;
 const { Client } = require('azure-iot-device');
 const { Message } = require('azure-iot-device');
-const { events, simulatorSettings } = require('./utilities/commandLineArgsProcessor').Processor(argv);
+const { configFile, simulatorSettings } = require('./utilities/commandLineArgsProcessor').Processor(argv);
+
+const delay = configFile.delay || 0;
+const repeatCount = configFile.repeatCount || 0;
+const cycle = configFile.cycle * 1000 || 2000;
+const { events } = configFile;
 
 const connectionString = simulatorSettings.connString || '';
-const keepAliveSendInterval = events.keep_alive_send_interval;
-const intervalLimit = events.intervals.length;
+const eventCount = events.length;
 const runInLoop = simulatorSettings.loop;
 const { deviceId } = simulatorSettings;
 
-let intervalCount = 0;
+let currentEventIndex = 0;
 let intervalLength;
 let repetitionCounter = 0;
 
@@ -48,49 +52,44 @@ function messageHandler(msg) {
 }
 
 function connectHandler() {
-  intervalLength = events.intervals[intervalCount].interval_length * 1000 || 2000;
+  setIntervalLength();
   setTimeout(() => setIntervalActions(), intervalLength);
 }
 
 function setIntervalActions() {
+  console.log("INT ACT")
   const message = generateMessage();
   console.log(`Sending message: \n ${message.getData()} \n`);
   client.sendEvent(message, callbackHandler('send'));
 
   setIntervalCount();
-  // intervalCount = runInLoop ? (intervalCount + 1) % intervalLimit : intervalCount += 1;
 }
 
 function setIntervalCount() {
-  if (events.intervals[intervalCount].repeat > 0 || false) {
-    if (repetitionCounter + 1 === events.intervals[intervalCount].repeat) {
+  if (events[currentEventIndex].repeat > 0 || false) {
+    if (repetitionCounter + 1 === events[currentEventIndex].repeat) {
       repetitionCounter = 0;
-      intervalCount += 1;
-    } else if (repetitionCounter + 1 < events.intervals[intervalCount].repeat) {
+      currentEventIndex += 1;
+    } else if (repetitionCounter + 1 < events[currentEventIndex].repeat) {
       repetitionCounter += 1;
     }
   } else if (runInLoop) {
-    intervalCount = (intervalCount + 1) % intervalLimit;
+    currentEventIndex = (currentEventIndex + 1) % eventCount;
   } else {
-    intervalCount += 1;
+    currentEventIndex += 1;
   }
 }
 
 function generateMessage() {
-  const intervalEvents = [];
-  events.intervals[intervalCount].events.forEach((event) => {
-    if (!(event.randomized || false) || Math.random() >= 0.5) {
-      intervalEvents.push(
-        JSON.stringify(generateMessageContent(event.event_type, event.payload)),
-      );
-    }
-  });
-
-  if ((intervalCount + 1) % keepAliveSendInterval === 0) {
-    intervalEvents.push(JSON.stringify(generateMessageContent('keep_alive', { connection_status_code: 1 })));
+  if (!(events[currentEventIndex].randomized || false) || Math.random() >= 0.5) {
+    return new Message(
+      generateMessageContent(
+        events[currentEventIndex].event_type,
+        events[currentEventIndex].payload,
+      ),
+    );
   }
-  const message = new Message(`[${intervalEvents.join(',')}]`);
-  return message;
+  return new Message('{}');
 }
 
 function generateMessageContent(eventType, payload) {
@@ -101,7 +100,7 @@ function generateMessageContent(eventType, payload) {
   data.event = eventType;
   data.payload = payload;
 
-  return data;
+  return JSON.stringify(data);
 }
 
 function callbackHandler(op) {
@@ -109,13 +108,29 @@ function callbackHandler(op) {
     if (err) console.log(`${op} error: ${err.toString()}`);
     if (res) {
       console.log(`${op} status ${res.constructor.name}`);
-      if (intervalCount >= intervalLimit) {
+      if (currentEventIndex >= eventCount) {
         client.close();
         process.exit();
       } else {
-        intervalLength = events.intervals[intervalCount].interval_length * 1000 || 2000;
+        setIntervalLength();
         setTimeout(() => setIntervalActions(), intervalLength);
       }
     }
   };
+}
+
+function setIntervalLength() {
+  const currIntervalLength = events[currentEventIndex].interval_length;
+  if (!currIntervalLength) {
+    intervalLength = cycle;
+  } else if (!Array.isArray(currIntervalLength)) {
+    intervalLength = events[currentEventIndex].interval_length * 1000;
+  } else {
+    currIntervalLength.sort();
+    intervalLength = randomIntFromInterval(currIntervalLength[0], currIntervalLength[1]);
+  }
+}
+
+function randomIntFromInterval(min, max) {
+  return Math.floor(Math.random() * (max - min + 1) + min) * 1000;
 }

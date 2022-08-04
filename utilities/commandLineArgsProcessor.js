@@ -20,8 +20,8 @@ module.exports.Processor = (argv) => {
       passedArguments[arg[0]] = arg[0] === 'loop' ? true : arg[1];
     }
   });
-  const events = FileParser(passedArguments);
+  const configFile = FileParser(passedArguments);
   const simulatorSettings = SettingsManager(passedArguments);
 
-  return { events, simulatorSettings };
+  return { configFile, simulatorSettings };
 };

@@ -15,12 +15,20 @@ module.exports.FileParser = (passedArguments) => {
     switch (fileExtension) {
       case 'yml':
       case 'yaml':
-        events = YAMLParser(passedArguments.file);
+        try {
+          events = YAMLParser(passedArguments.file);
+        } catch (error) {
+          throw new Error('Error while parsing the yaml file: ', error);
+        }
         break;
 
       case 'json':
       case 'js':
-        events = require(passedArguments.file);
+        try {
+          events = require(passedArguments.file);
+        } catch (error) {
+          throw new Error('Error while parsing the json file: ', error);
+        }
         break;
 
       default:

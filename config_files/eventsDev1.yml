@@ -1,14 +1,45 @@
+#Good 0 - 200
+  # Running - 200
+#Neutral - 201 - 500
+  # On hold - 300
+  # Warning - 401 - 500
+#Negative - 501 - 1000
+  # No connection - 600 
+  # Error - 700 - 1000 
+
+#Randomize not only event but also interval and set event duration 
+#Randomize interval in range()
 ---
-keep_alive_send_interval: 3
-intervals:
-- repeat: 3
-  events:
-  - event_type: shift_start
-    payload:
-    - program_name: box_palletizing
-- interval_length: 2
-  events:
-  - event_type: status
-    payload: 
-    - status_code: 4
-      status_information: Connected and Running
+delay: 600
+repeatCount: 17
+cycle: 5
+events:
+# - interval_length: 2
+#   repeat: 3
+#   event_type: status
+#   payload:
+#     - status: 300
+# - event_type: program
+#   payload:
+#   - program_name: palletizing01
+#     status: 1
+# - event_type: status
+#   payload:
+#   - status: 200
+# - repeat: 2
+#   interval_length: 3
+#   event_type: cycle
+#   payload:
+- interval_length: [4, 10]
+  repeat: 4
+  randomized: true
+  event_type: status
+  payload: 
+  - status: 750
+# - event_type: program
+#   payload:
+#   - program_name: palletizing01
+#     status: 0
+# - event_type: status
+#   payload: 
+#   - status: 300
