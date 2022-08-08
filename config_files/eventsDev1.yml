@@ -1,5 +1,4 @@
 ---
-delay: 10
 loop: true
 cycle: 2
 repeatCount: 3
