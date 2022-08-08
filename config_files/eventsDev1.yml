@@ -1,29 +1,18 @@
-#Good 0 - 200
-  # Running - 200
-#Neutral - 201 - 500
-  # On hold - 300
-  # Warning - 401 - 500
-#Negative - 501 - 1000
-  # No connection - 600 
-  # Error - 700 - 1000 
-
-#Randomize not only event but also interval and set event duration 
-#Randomize interval in range()
 ---
-delay: 600
+delay: 10
 loop: true
 cycle: 2
 repeatCount: 3
 events:
-# - interval_length: 2
-#   repeat: 3
-#   event_type: status
-#   payload:
-#     - status: 300
-# - event_type: program
-#   payload:
-#   - program_name: palletizing01
-#     status: 1
+- interval_length: 2
+  repeat: 3
+  event_type: status
+  payload:
+    - status: 300
+- event_type: program
+  payload:
+  - program_name: palletizing01
+    status: 1
 - event_type: status
   payload:
   - status: 200
@@ -33,14 +22,14 @@ events:
   payload:
 - interval_length: [0.1, 1]
   repeat: 4
-  # randomized: true
+  randomized: true
   event_type: status
   payload: 
   - status: 750
-# - event_type: program
-#   payload:
-#   - program_name: palletizing01
-#     status: 0
-# - event_type: status
-#   payload: 
-#   - status: 300
+- event_type: program
+  payload:
+  - program_name: palletizing01
+    status: 0
+- event_type: status
+  payload: 
+  - status: 300

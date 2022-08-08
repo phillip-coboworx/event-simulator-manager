@@ -7,7 +7,7 @@ const { Client } = require('azure-iot-device');
 const { Message } = require('azure-iot-device');
 const { configFile, simulatorSettings } = require('./utilities/commandLineArgsProcessor').Processor(argv);
 
-const delay = configFile.delay || 0;
+const delay = configFile.delay * 1000 || 0;
 const cycle = configFile.cycle * 1000 || 2000;
 const { events } = configFile;
 const runInLoop = configFile.loop;
@@ -22,6 +22,7 @@ let loopCounter = 0;
 let currentEventIndex = 0;
 let intervalLength;
 let repetitionCounter = 0;
+let useDelay = false;
 
 if (connectionString === '') {
   throw new Error('Device connection string not set!');
@@ -59,6 +60,7 @@ function connectHandler() {
 }
 
 function setIntervalActions() {
+  useDelay = false;
   const message = generateMessage();
   console.log(`Sending message: \n ${message.getData()} \n`);
   client.sendEvent(message, callbackHandler('send'));
@@ -83,6 +85,10 @@ function setIntervalCount() {
 
   if (currentEventIndex === eventCount - 1 && !repetitionCycleOngoing) {
     loopCounter += 1;
+    useDelay = true;
+    console.log("DELAY: ", new Date(), delay);
+
+    // setTimeout(() => setIntervalActions(), delay);
   }
 
   if (increaseIndex) {
@@ -127,7 +133,7 @@ function callbackHandler(op) {
         process.exit();
       } else {
         setIntervalLength();
-        setTimeout(() => setIntervalActions(), intervalLength);
+        setTimeout(() => setIntervalActions(), useDelay ? delay : intervalLength);
       }
     }
   };
