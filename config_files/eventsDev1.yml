@@ -11,8 +11,9 @@
 #Randomize interval in range()
 ---
 delay: 600
-repeatCount: 17
-cycle: 5
+loop: true
+cycle: 2
+repeatCount: 3
 events:
 # - interval_length: 2
 #   repeat: 3
@@ -23,16 +24,16 @@ events:
 #   payload:
 #   - program_name: palletizing01
 #     status: 1
-# - event_type: status
-#   payload:
-#   - status: 200
-# - repeat: 2
-#   interval_length: 3
-#   event_type: cycle
-#   payload:
-- interval_length: [4, 10]
+- event_type: status
+  payload:
+  - status: 200
+- repeat: 2
+  interval_length: 3
+  event_type: cycle
+  payload:
+- interval_length: [0.1, 1]
   repeat: 4
-  randomized: true
+  # randomized: true
   event_type: status
   payload: 
   - status: 750

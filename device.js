@@ -8,15 +8,17 @@ const { Message } = require('azure-iot-device');
 const { configFile, simulatorSettings } = require('./utilities/commandLineArgsProcessor').Processor(argv);
 
 const delay = configFile.delay || 0;
-const repeatCount = configFile.repeatCount || 0;
 const cycle = configFile.cycle * 1000 || 2000;
 const { events } = configFile;
+const runInLoop = configFile.loop;
+const repeatCount = configFile.repeatCount || 0;
+
+const eventCount = events.length;
 
 const connectionString = simulatorSettings.connString || '';
-const eventCount = events.length;
-const runInLoop = simulatorSettings.loop;
 const { deviceId } = simulatorSettings;
 
+let loopCounter = 0;
 let currentEventIndex = 0;
 let intervalLength;
 let repetitionCounter = 0;
@@ -57,7 +59,6 @@ function connectHandler() {
 }
 
 function setIntervalActions() {
-  console.log("INT ACT")
   const message = generateMessage();
   console.log(`Sending message: \n ${message.getData()} \n`);
   client.sendEvent(message, callbackHandler('send'));
@@ -65,18 +66,31 @@ function setIntervalActions() {
   setIntervalCount();
 }
 
+// TODO Clean Up
 function setIntervalCount() {
+  let increaseIndex = true;
+  let repetitionCycleOngoing = false;
   if (events[currentEventIndex].repeat > 0 || false) {
     if (repetitionCounter + 1 === events[currentEventIndex].repeat) {
       repetitionCounter = 0;
-      currentEventIndex += 1;
+      repetitionCycleOngoing = false;
     } else if (repetitionCounter + 1 < events[currentEventIndex].repeat) {
       repetitionCounter += 1;
+      increaseIndex = false;
+      repetitionCycleOngoing = true;
     }
-  } else if (runInLoop) {
-    currentEventIndex = (currentEventIndex + 1) % eventCount;
-  } else {
-    currentEventIndex += 1;
+  }
+
+  if (currentEventIndex === eventCount - 1 && !repetitionCycleOngoing) {
+    loopCounter += 1;
+  }
+
+  if (increaseIndex) {
+    if (runInLoop) {
+      currentEventIndex = (currentEventIndex + 1) % eventCount;
+    } else {
+      currentEventIndex += 1;
+    }
   }
 }
 
@@ -108,7 +122,7 @@ function callbackHandler(op) {
     if (err) console.log(`${op} error: ${err.toString()}`);
     if (res) {
       console.log(`${op} status ${res.constructor.name}`);
-      if (currentEventIndex >= eventCount) {
+      if (currentEventIndex >= eventCount || (repeatCount > 0 && loopCounter >= repeatCount)) {
         client.close();
         process.exit();
       } else {

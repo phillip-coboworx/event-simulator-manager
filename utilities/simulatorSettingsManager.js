@@ -3,7 +3,6 @@ module.exports.SettingsManager = (passedArguments) => {
   if (!passedArguments.deviceId || passedArguments.deviceId === '') throw new Error('No device ID was specified!');
 
   const simulatorSettings = {};
-  simulatorSettings.loop = !!passedArguments.loop;
   simulatorSettings.connString = passedArguments.connString;
   simulatorSettings.deviceId = passedArguments.deviceId;
 
